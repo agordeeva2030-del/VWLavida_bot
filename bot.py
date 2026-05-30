@@ -16,15 +16,16 @@ SYSTEM_PROMPT = f"""Ты — помощник по руководству экс
 """
 
 async def ask_ai(question: str) -> str:
-    async with httpx.AsyncClient(timeout=30) as client:
+    async with httpx.AsyncClient(timeout=60) as client:
         response = await client.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}",
                 "Content-Type": "application/json",
+                "HTTP-Referer": "https://github.com",
             },
             json={
-                "model": "meta-llama/llama-3.1-8b-instruct:free",
+                "model": "google/gemma-3-4b-it:free",
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": question},
@@ -32,6 +33,8 @@ async def ask_ai(question: str) -> str:
             },
         )
         data = response.json()
+        if "choices" not in data:
+            return f"Ошибка API: {data.get('error', {}).get('message', str(data))}"
         return data["choices"][0]["message"]["content"]
 
 
@@ -68,4 +71,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
