@@ -25,7 +25,7 @@ async def ask_ai(question: str) -> str:
                 "HTTP-Referer": "https://github.com",
             },
             json={
-                "model": "mistralai/mistral-7b-instruct:free",
+                "model": "openrouter/auto",
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": question},
